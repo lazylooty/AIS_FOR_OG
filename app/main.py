@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
-from app.database import Base, SessionLocal, engine
+from app.database import Base, SessionLocal, engine, ensure_schema_upgrades
 from app.routers.admin import router as admin_router
 from app.routers.auth import router as auth_router
 from app.routers.crm import router as crm_router
@@ -24,6 +24,7 @@ async def lifespan(app: FastAPI):
     settings.contracts_dir
     settings.photos_dir
     Base.metadata.create_all(bind=engine)
+    ensure_schema_upgrades()
     db = SessionLocal()
     try:
         seed_initial_data(db)
