@@ -26,6 +26,7 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg2://realtor_user:realtor_secret_password@db:5432/realtor_db}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production-super-secret-jwt-key}
       STORAGE_DIR: /app/storage
       AGENCY_NAME: ${AGENCY_NAME:-ИП Голубина Ольга Геннадьевна}
     ports:

@@ -1,0 +1,125 @@
+{% extends "public_base.html" %}
+
+{% block title %}Объекты недвижимости — {{ agency.agency_name if agency else "ИП Голубина О.Г." }}{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Каталог</span>
+        <h2>Объекты недвижимости</h2>
+        <p class="section-lead">Проверенные объекты жилой и коммерческой недвижимости. Нажмите «Записаться», чтобы договориться о показе.</p>
+      </div>
+      <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('catalog-inquiry-modal').showModal()">
+        Записаться на просмотр
+      </button>
+    </div>
+
+    <form method="get" action="/catalog" class="filter-bar">
+      <label class="field">
+        <span>Район</span>
+        <select name="district_id">
+          <option value="">Все районы</option>
+          {% for d in districts %}
+          <option value="{{ d.id_district }}" {% if filters.district_id == d.id_district %}selected{% endif %}>{{ d.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="field">
+        <span>Категория</span>
+        <select name="category_id">
+          <option value="">Любая</option>
+          {% for c in categories %}
+          <option value="{{ c.id_property_type }}" {% if filters.category_id == c.id_property_type %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="field">
+        <span>Комнат</span>
+        <input type="number" name="rooms" min="1" value="{{ filters.rooms or '' }}" placeholder="Любое" />
+      </label>
+      <label class="field">
+        <span>Макс. цена (₽)</span>
+        <input type="number" name="max_price" step="50000" value="{{ filters.max_price }}" placeholder="Например 12000000" />
+      </label>
+      <div style="display: flex; gap: 8px;">
+        <button type="submit" class="btn btn-primary btn-sm">Найти</button>
+        <a href="/catalog" class="btn btn-outline btn-sm">Сбросить</a>
+      </div>
+    </form>
+
+    {% if properties %}
+    <div class="cards-grid">
+      {% for prop in properties %}
+      <article class="property-card">
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--muted);">
+            <span>{{ prop.district.name }} • {{ prop.category.name }}</span>
+            <strong>{{ prop.status.name }}</strong>
+          </div>
+          <h3 style="margin: 8px 0 10px; font-size: 18px;">{{ prop.address }}</h3>
+          <div class="property-specs">
+            <span>{{ prop.total_area }} м²</span>
+            <span>{{ prop.rooms_count }} комн.</span>
+            <span>{{ prop.floor }} этаж</span>
+            <span>{{ prop.building_type.name }}</span>
+            <span>{{ prop.repair_type.name }}</span>
+          </div>
+          {% if prop.description %}
+          <p class="muted" style="font-size: 14px; margin: 12px 0 0;">{{ prop.description }}</p>
+          {% endif %}
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border);">
+          <div>
+            <div class="property-price">{{ "{:,.0f}".format(prop.price).replace(",", " ") }} ₽</div>
+            <div class="muted" style="font-size: 12px;">
+              {{ "{:,.0f}".format(prop.price / prop.total_area).replace(",", " ") }} ₽ / м²
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('catalog-inquiry-modal').showModal()">
+            Записаться
+          </button>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="muted">По выбранным параметрам объекты не найдены.</p>
+    {% endif %}
+  </div>
+</section>
+
+<dialog id="catalog-inquiry-modal" class="modal">
+  <div class="modal-header">
+    <h3>Запись на просмотр объекта</h3>
+    <button type="button" class="modal-close" aria-label="Закрыть" onclick="document.getElementById('catalog-inquiry-modal').close()">×</button>
+  </div>
+  <form method="post" action="/inquiries/submit" class="modal-body">
+    <input type="hidden" name="redirect_to" value="/catalog" />
+    <input type="hidden" name="inquiry_type" value="Запись на просмотр" />
+    <label class="field">
+      <span>Объект недвижимости</span>
+      <select name="property_id">
+        <option value="0">— Любой подходящий —</option>
+        {% for prop in properties %}
+        <option value="{{ prop.id_property }}">{{ prop.address }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="field">
+      <span>Ваше имя *</span>
+      <input type="text" name="full_name" value="{{ current_user.full_name if current_user else '' }}" required />
+    </label>
+    <label class="field">
+      <span>Телефон *</span>
+      <input type="text" name="phone" value="{{ current_user.phone if current_user else '' }}" required />
+    </label>
+    <label class="field">
+      <span>Комментарий</span>
+      <textarea name="message" rows="3" placeholder="Желаемые дата и время показа..."></textarea>
+    </label>
+    <button type="submit" class="btn btn-primary">Отправить заявку</button>
+  </form>
+</dialog>
+{% endblock %}

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{{ agency.agency_name if agency else "ИП Голубина Ольга Геннадьевна" }}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/public.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="/" class="brand-mark">
+          <div class="brand-monogram">ГО</div>
+          <div>
+            <div class="brand-name">{{ agency.agency_name if agency else "ИП Голубина Ольга Геннадьевна" }}</div>
+            <div class="brand-role">Риэлторские и юридические услуги</div>
+          </div>
+        </a>
+
+        <!-- Шапка только с пунктами: О себе, Объекты недвижимости, Отзывы -->
+        <nav class="header-nav">
+          <a href="/" class="{% if active_nav == 'about' %}active{% endif %}">О себе</a>
+          <a href="/catalog" class="{% if active_nav == 'catalog' %}active{% endif %}">Объекты недвижимости</a>
+          <a href="/reviews" class="{% if active_nav == 'reviews' %}active{% endif %}">Отзывы</a>
+        </nav>
+
+        <div class="header-actions">
+          {% if current_user %}
+          <a href="/properties" class="btn btn-primary btn-sm">Рабочая панель</a>
+          <a href="/logout" class="btn btn-outline btn-sm">Выйти</a>
+          {% else %}
+          <a href="/login" class="btn btn-outline btn-sm">Войти</a>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+
+    {% if message %}
+    <div class="container">
+      <div class="alert alert-success">{{ message }}</div>
+    </div>
+    {% endif %}
+    {% if error %}
+    <div class="container">
+      <div class="alert alert-error">{{ error }}</div>
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div>
+            <div class="footer-title">{{ agency.agency_name if agency else "ИП Голубина Ольга Геннадьевна" }}</div>
+            <p class="footer-muted">
+              ИНН: {{ agency.agency_inn if agency else "667109876543" }}<br />
+              Адрес: {{ agency.agency_address if agency else "г. Екатеринбург, ул. Малышева, д. 51" }}
+            </p>
+          </div>
+          <div>
+            <div class="footer-title">Разделы</div>
+            <div class="footer-links">
+              <a href="/">О себе</a>
+              <a href="/catalog">Объекты недвижимости</a>
+              <a href="/reviews">Отзывы клиентов</a>
+              <a href="/login">Вход в личный кабинет</a>
+            </div>
+          </div>
+          <div>
+            <div class="footer-title">Контакты</div>
+            <p class="footer-muted">
+              Телефон: {{ agency.agency_phone if agency else "+7 (922) 123-45-67" }}<br />
+              Email: {{ agency.agency_email if agency else "golubina.realty@example.ru" }}
+            </p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© 2026 {{ agency.agency_name if agency else "ИП Голубина Ольга Геннадьевна" }}. Все права защищены.</span>
+          <span>АИС сопровождения сделок с недвижимостью</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

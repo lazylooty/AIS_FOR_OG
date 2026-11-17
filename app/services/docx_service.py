@@ -7,7 +7,7 @@ from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 from docx import Document
 from docx.shared import Pt
 
-from app.models import AppSettings, Client, Property
+from app.models import AppSettings, Client, Deal, Property
 
 TAG_PATTERN = re.compile(r"\{\{\s*([^{}]+?)\s*\}\}")
 USER_PREFIX_RE = re.compile(
@@ -143,31 +143,41 @@ def _resolve_property_field(prop: Property, field: str) -> str:
     return ""
 
 
+def _resolve_deal_field(deal: Deal, field: str) -> str:
+    normalized = field.upper().replace(".", "_")
+    if normalized in ("PRICE", "FINAL_PRICE"):
+        return _format_money(deal.final_price)
+    if normalized in ("COMMISSION", "COMMISSION_RATE"):
+        return f"{deal.commission_rate:.2f}%"
+    if normalized == "TYPE":
+        return deal.deal_type.name if deal.deal_type else ""
+    if normalized == "STATUS":
+        return deal.deal_status.name if deal.deal_status else ""
+    if normalized in ("ESCROW", "ESCROW_STATUS"):
+        return deal.escrow_status.name if deal.escrow_status else ""
+    if normalized == "START_DATE":
+        return _format_date(deal.start_date)
+    if normalized == "REALTOR":
+        return deal.realtor.full_name if deal.realtor else ""
+    return ""
+
+
 def resolve_tag_value(
     raw_tag: str,
     clients: Sequence[Client],
     prop: Optional[Property],
     agency: Optional[AppSettings],
     contract_number: str,
+    deal: Optional[Deal] = None,
 ) -> Optional[str]:
-    """
-    Resolve a placeholder tag inside {{ ... }}.
-    Supports:
-      - {{ FIO.USER_1 }}, {{ FIO.USER(_1) }}, {{ FIO.USER(1) }}, {{ FIO.USER }}
-      - {{ INN.USER_2 }}, {{ PASSPORT.USER_2 }}, {{ USER_1.FIO }}
-      - {{ PROPERTY.ADDRESS }}, {{ PROPERTY.CADASTRAL }}, {{ PROPERTY.PRICE }}, etc.
-      - {{ AGENCY.NAME }}, {{ AGENCY.INN }}, {{ CONTRACT.NUMBER }}, {{ CONTRACT.DATE }}
-    Returns None if the tag syntax is unknown so it stays visible in the document.
-    """
+    """Resolve {{ ... }} tag values for clients, property, deal, agency, and contract."""
     expr = raw_tag.strip().upper()
 
-    # 1. Contract / date fields
     if expr in ("CONTRACT.NUMBER", "DOC.NUMBER"):
         return contract_number
     if expr in ("CONTRACT.DATE", "DOC.DATE", "DATE", "TODAY"):
         return date.today().strftime("%d.%m.%Y")
 
-    # 2. Agency fields
     if expr.startswith("AGENCY.") and agency is not None:
         sub = expr.split(".", 1)[1]
         mapping: Dict[str, str] = {
@@ -180,14 +190,18 @@ def resolve_tag_value(
         if sub in mapping:
             return mapping[sub]
 
-    # 3. Property fields
+    if expr.startswith("DEAL.") and deal is not None:
+        sub = expr.split(".", 1)[1]
+        val = _resolve_deal_field(deal, sub)
+        if val != "":
+            return val
+
     if expr.startswith("PROPERTY.") and prop is not None:
         sub = expr.split(".", 1)[1]
         val = _resolve_property_field(prop, sub)
         if val != "" or sub in ("DESCRIPTION",):
             return val
 
-    # 4. User / Client fields (FIELD.USER_1 or USER_1.FIELD)
     match = USER_PREFIX_RE.match(expr) or USER_FIRST_RE.match(expr)
     if match:
         idx_str = match.group("idx")
@@ -206,6 +220,7 @@ def _replace_tags_in_paragraph(
     prop: Optional[Property],
     agency: Optional[AppSettings],
     contract_number: str,
+    deal: Optional[Deal] = None,
 ) -> None:
     runs = paragraph.runs
     if not runs:
@@ -224,10 +239,11 @@ def _replace_tags_in_paragraph(
     if not matches:
         return
 
-    # Process right-to-left so earlier run offsets remain valid for subsequent replacements
     for match in reversed(matches):
         raw_tag = match.group(1)
-        replacement = resolve_tag_value(raw_tag, clients, prop, agency, contract_number)
+        replacement = resolve_tag_value(
+            raw_tag, clients, prop, agency, contract_number, deal=deal
+        )
         if replacement is None:
             continue
 
@@ -257,11 +273,14 @@ def render_contract_docx(
     prop: Optional[Property],
     agency: Optional[AppSettings],
     contract_number: str,
+    deal: Optional[Deal] = None,
 ) -> Path:
-    """Fill a .docx template with client/property/agency data preserving Word formatting."""
+    """Fill a .docx template with client/property/deal/agency data preserving Word formatting."""
     doc = Document(str(template_path))
     for paragraph in _iter_all_paragraphs(doc):
-        _replace_tags_in_paragraph(paragraph, clients, prop, agency, contract_number)
+        _replace_tags_in_paragraph(
+            paragraph, clients, prop, agency, contract_number, deal=deal
+        )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     doc.save(str(output_path))
     return output_path
@@ -275,7 +294,7 @@ def create_sample_template_docx(output_path: Path) -> Path:
     style.font.size = Pt(12)
 
     title = doc.add_paragraph()
-    title.alignment = 1  # Center
+    title.alignment = 1
     r = title.add_run("ДОГОВОР ОКАЗАНИЯ РИЭЛТОРСКИХ УСЛУГ № {{ CONTRACT.NUMBER }}")
     r.bold = True
 

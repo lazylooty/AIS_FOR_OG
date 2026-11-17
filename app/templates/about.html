@@ -1,0 +1,293 @@
+{% extends "public_base.html" %}
+
+{% block title %}{{ agency.agency_name if agency else "ИП Голубина Ольга Геннадьевна" }} — О себе{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">{{ agency.agency_name if agency else "ИП Голубина Ольга Геннадьевна" }}</span>
+        <h1>{{ agency.hero_title if agency else "Недвижимость с безупречной юридической чистотой" }}</h1>
+        <p class="hero-subtitle">
+          {{ agency.hero_subtitle if agency else "Персональное сопровождение сделок купли-продажи и аренды недвижимости." }}
+        </p>
+        <div class="hero-cta">
+          <button type="button" class="btn btn-primary" onclick="document.getElementById('inquiry-modal').showModal()">
+            Записаться на консультацию
+          </button>
+          <a href="/catalog" class="btn btn-outline">Смотреть объекты</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-visual-badge">Экспертное сопровождение • Эскроу • ЕГРН</div>
+        <svg viewBox="0 0 460 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Архитектурный комплекс">
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#195c53"/>
+              <stop offset="100%" stop-color="#0d2329"/>
+            </linearGradient>
+          </defs>
+          <rect width="460" height="300" fill="url(#sky)"/>
+          <circle cx="375" cy="70" r="36" fill="#d4b47c" opacity="0.25"/>
+          <rect x="42" y="105" width="110" height="165" rx="6" fill="#ffffff" opacity="0.14"/>
+          <rect x="168" y="62" width="132" height="208" rx="6" fill="#ffffff" opacity="0.22"/>
+          <rect x="316" y="128" width="102" height="142" rx="6" fill="#ffffff" opacity="0.16"/>
+          <rect x="188" y="84" width="24" height="28" rx="3" fill="#d4b47c" opacity="0.85"/>
+          <rect x="224" y="84" width="24" height="28" rx="3" fill="#ffffff" opacity="0.55"/>
+          <rect x="260" y="84" width="24" height="28" rx="3" fill="#ffffff" opacity="0.55"/>
+          <rect x="188" y="128" width="24" height="28" rx="3" fill="#ffffff" opacity="0.55"/>
+          <rect x="224" y="128" width="24" height="28" rx="3" fill="#d4b47c" opacity="0.85"/>
+          <rect x="260" y="128" width="24" height="28" rx="3" fill="#ffffff" opacity="0.55"/>
+          <rect x="64" y="130" width="24" height="26" rx="3" fill="#ffffff" opacity="0.5"/>
+          <rect x="102" y="130" width="24" height="26" rx="3" fill="#d4b47c" opacity="0.8"/>
+          <rect x="336" y="152" width="24" height="26" rx="3" fill="#d4b47c" opacity="0.8"/>
+          <rect x="372" y="152" width="24" height="26" rx="3" fill="#ffffff" opacity="0.5"/>
+          <rect x="0" y="268" width="460" height="32" fill="#091518"/>
+        </svg>
+        <div class="hero-visual-caption">
+          <span>Жилая и коммерческая недвижимость</span>
+          <strong>{{ agency.agency_phone if agency else "+7 (922) 123-45-67" }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="stats-strip">
+      <div class="stat-card">
+        <div class="stat-value">{{ agency.stat_years if agency else "12+ лет" }}</div>
+        <div class="stat-label">Успешной практики на рынке</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ agency.stat_deals if agency else "640+" }}</div>
+        <div class="stat-label">Проведенных сделок с недвижимостью</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ agency.stat_clients if agency else "1 100+" }}</div>
+        <div class="stat-label">Довольных клиентов и семей</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ agency.stat_satisfaction if agency else "99%" }}</div>
+        <div class="stat-label">Обращений по личным рекомендациям</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Описание предприятия с визуальными блоками -->
+<section class="section section-soft">
+  <div class="container">
+    <div class="about-grid">
+      <div>
+        <span class="eyebrow">О предприятии</span>
+        <h2>Личная ответственность за каждую сделку</h2>
+        <p>{{ agency.about_text if agency else "" }}</p>
+
+        <div class="pillars">
+          <div class="pillar">
+            <strong>Глубокая правовая экспертиза</strong>
+            <span>Проверка истории владения ЕГРН, залогов, банкротства и согласий перед задатком.</span>
+          </div>
+          <div class="pillar">
+            <strong>Безопасные расчеты и эскроу</strong>
+            <span>Сопровождение аккредитивов, банковских ячеек, ипотеки и счетов эскроу.</span>
+          </div>
+          <div class="pillar">
+            <strong>Автоматизированный документооборот</strong>
+            <span>Точные юридические договоры без опечаток, прозрачный график показов и статусов.</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <button type="button" class="btn btn-primary" onclick="document.getElementById('inquiry-modal').showModal()">
+            Записаться к риэлтору
+          </button>
+        </div>
+      </div>
+
+      <div class="about-gallery">
+        <div class="gallery-tile wide">
+          <svg viewBox="0 0 520 190" xmlns="http://www.w3.org/2000/svg">
+            <rect width="520" height="190" rx="10" fill="#eef2f0"/>
+            <rect x="28" y="34" width="190" height="122" rx="8" fill="#0f4c45"/>
+            <rect x="48" y="54" width="150" height="82" rx="4" fill="#d4b47c" opacity="0.35"/>
+            <rect x="240" y="34" width="250" height="22" rx="5" fill="#14181f" opacity="0.16"/>
+            <rect x="240" y="70" width="210" height="14" rx="4" fill="#14181f" opacity="0.1"/>
+            <rect x="240" y="94" width="180" height="14" rx="4" fill="#14181f" opacity="0.1"/>
+            <rect x="240" y="126" width="120" height="30" rx="6" fill="#0f4c45"/>
+          </svg>
+          <div class="gallery-caption">Индивидуальный подбор и проверка объектов перед сделкой</div>
+        </div>
+        <div class="gallery-tile">
+          <svg viewBox="0 0 240 130" xmlns="http://www.w3.org/2000/svg">
+            <rect width="240" height="130" rx="8" fill="#f7f4ec"/>
+            <path d="M35 95 L120 30 L205 95 Z" fill="#0f4c45" opacity="0.85"/>
+            <rect x="65" y="75" width="110" height="40" fill="#b08d57" opacity="0.6"/>
+          </svg>
+          <div class="gallery-caption">Жилой фонд и загородные дома</div>
+        </div>
+        <div class="gallery-tile">
+          <svg viewBox="0 0 240 130" xmlns="http://www.w3.org/2000/svg">
+            <rect width="240" height="130" rx="8" fill="#edf2f4"/>
+            <rect x="40" y="25" width="60" height="85" rx="4" fill="#1d3557" opacity="0.85"/>
+            <rect x="112" y="42" width="88" height="68" rx="4" fill="#0f4c45" opacity="0.85"/>
+          </svg>
+          <div class="gallery-caption">Коммерческая недвижимость</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Визитные карточки сотрудников (из курсового) -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Команда и визитки</span>
+        <h2>Ваши специалисты</h2>
+      </div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('inquiry-modal').showModal()">
+        Задать вопрос специалисту
+      </button>
+    </div>
+
+    <div class="cards-grid">
+      {% for card in employees %}
+      <article class="team-card">
+        <div class="team-top">
+          {% if card.photo_path %}
+          <img src="{{ card.photo_path }}" alt="{{ card.user.full_name }}" class="team-avatar" />
+          {% else %}
+          <div class="team-avatar">{{ card.user.full_name[:2] | upper }}</div>
+          {% endif %}
+          <div>
+            <strong>{{ card.user.full_name }}</strong>
+            <div class="muted">{{ card.position.name }}</div>
+            <div class="team-meta">
+              <span>Стаж: {{ card.experience_years }} лет</span>
+              <span class="rating-pill">★ {{ card.rating }}</span>
+            </div>
+          </div>
+        </div>
+        <p class="muted" style="margin: 0; font-size: 14px;">{{ card.description or "" }}</p>
+        <div class="team-meta">
+          <span>{{ card.user.phone }}</span>
+          <span>{{ card.user.email }}</span>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Актуальные объекты (краткий превью-блок) -->
+{% if featured_properties %}
+<section class="section section-soft">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Предложения</span>
+        <h2>Актуальные объекты недвижимости</h2>
+      </div>
+      <a href="/catalog" class="btn btn-outline btn-sm">Все объекты →</a>
+    </div>
+    <div class="cards-grid">
+      {% for prop in featured_properties %}
+      <article class="property-card">
+        <div>
+          <div class="muted" style="font-size: 13px;">{{ prop.district.name }} • {{ prop.category.name }}</div>
+          <h3 style="margin: 6px 0 10px; font-size: 18px;">{{ prop.address }}</h3>
+          <div class="property-specs">
+            <span>{{ prop.total_area }} м²</span>
+            <span>{{ prop.rooms_count }} комн.</span>
+            <span>{{ prop.floor }} этаж</span>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+          <div class="property-price">{{ "{:,.0f}".format(prop.price).replace(",", " ") }} ₽</div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('inquiry-modal').showModal()">
+            Записаться
+          </button>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Блок отзывов под описанием и перед футером (требование заказчика) -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Репутация</span>
+        <h2>Отзывы клиентов</h2>
+        <p class="section-lead">Реальные впечатления покупателей, продавцов и арендаторов о работе с {{ agency.agency_name if agency else "ИП Голубина Ольга Геннадьевна" }}.</p>
+      </div>
+      <a href="/reviews" class="btn btn-outline btn-sm">Все отзывы и оставить свой →</a>
+    </div>
+
+    {% if reviews %}
+    <div class="cards-grid">
+      {% for rev in reviews %}
+      <article class="review-card">
+        <div>
+          <div class="stars">{% for _ in range(rev.rating) %}★{% endfor %}</div>
+          <p style="margin: 10px 0 0; font-size: 14px;">«{{ rev.review_text }}»</p>
+        </div>
+        <div>
+          <div class="review-author">{{ rev.author.full_name }}</div>
+          <div class="review-target">
+            {% if rev.target %}Специалист: {{ rev.target.full_name }} • {% endif %}
+            {{ rev.created_date.strftime("%d.%m.%Y") }}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="muted">Отзывы появятся здесь после публикации.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Модальное окно обращения к риэлтору (кнопка "Записаться") -->
+<dialog id="inquiry-modal" class="modal">
+  <div class="modal-header">
+    <h3>Запись к риэлтору</h3>
+    <button type="button" class="modal-close" aria-label="Закрыть" onclick="document.getElementById('inquiry-modal').close()">×</button>
+  </div>
+  <form method="post" action="/inquiries/submit" class="modal-body">
+    <input type="hidden" name="redirect_to" value="/" />
+    <label class="field">
+      <span>Ваше имя / ФИО *</span>
+      <input type="text" name="full_name" value="{{ current_user.full_name if current_user else '' }}" required placeholder="Например: Алексей Смирнов" />
+    </label>
+    <label class="field">
+      <span>Телефон для связи *</span>
+      <input type="text" name="phone" value="{{ current_user.phone if current_user else '' }}" required placeholder="+7 (900) 000-00-00" />
+    </label>
+    <label class="field">
+      <span>Email (необязательно)</span>
+      <input type="email" name="email" value="{{ current_user.email if current_user else '' }}" placeholder="name@example.ru" />
+    </label>
+    <label class="field">
+      <span>Тема обращения</span>
+      <select name="inquiry_type">
+        <option value="Консультация по покупке">Консультация по покупке</option>
+        <option value="Продажа недвижимости">Продажа недвижимости</option>
+        <option value="Запись на просмотр">Запись на просмотр</option>
+        <option value="Юридическая проверка сделки">Юридическая проверка сделки</option>
+      </select>
+    </label>
+    <label class="field">
+      <span>Комментарий или пожелания</span>
+      <textarea name="message" rows="3" placeholder="Опишите бюджет, район или удобное время для звонка..."></textarea>
+    </label>
+    <button type="submit" class="btn btn-primary">Отправить обращение</button>
+  </form>
+</dialog>
+{% endblock %}

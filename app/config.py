@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     )
     storage_dir: Path = Path("/app/storage")
     agency_name: str = "ИП Голубина Ольга Геннадьевна"
+    secret_key: str = "change-me-in-production-super-secret-jwt-key"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60 * 24 * 7
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
@@ -20,6 +23,12 @@ class Settings(BaseSettings):
     @property
     def contracts_dir(self) -> Path:
         path = self.storage_dir / "contracts"
+        path.mkdir(parents=True, exist_ok=True)
+        return path
+
+    @property
+    def photos_dir(self) -> Path:
+        path = self.storage_dir / "photos"
         path.mkdir(parents=True, exist_ok=True)
         return path
 
